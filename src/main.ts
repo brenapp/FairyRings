@@ -10,7 +10,7 @@ import "./lib/command";
 // import "./lib/actions/eventlog";
 
 client.on("ready", () => {
-  console.log("vexbot#0599 is online!");
+  console.log("ByrnesBot#9971 is online!");
   client.user.setActivity("over the server", { type: "WATCHING" });
 });
 client.on("message", handleMessage);
