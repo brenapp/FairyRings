@@ -60,7 +60,7 @@ type CommandHandler = (
  */
 function addCommand(name: string, handler: CommandHandler) {
   addMessageHandler(async message => {
-    if (message.content.toLowerCase().startsWith(`!${name}`)) {
+    if (message.content.toLowerCase().startsWith(`/${name}`)) {
       let [, ...args] = message.content.split(" ");
       return handler(args, message);
     } else {
