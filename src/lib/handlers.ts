@@ -1,4 +1,4 @@
-import { addMessageHandler } from "./message";
+import { addMessageHandler, addCommand } from "./message";
 import { TextChannel } from "discord.js";
 import { client } from "../client";
 
@@ -59,11 +59,7 @@ addMessageHandler(message => {
 });
 
 // Ping!
-addMessageHandler(message => {
-  if (message.content.toLowerCase() == "!ping") {
-    message.reply("Pong!");
-    return true;
-  } else {
-    return false;
-  }
+addCommand("ping", (args, message) => {
+  message.reply("Pong!");
+  return true;
 });
