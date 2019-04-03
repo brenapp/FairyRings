@@ -1,0 +1,31 @@
+{
+  "majors": {
+    "ENGINEERING": [
+      "Bioengineering",
+      "Biosystems",
+      "Chemical",
+      "Computer",
+      "Electrical",
+      "Environmental",
+      "Industrial",
+      "Materials",
+      "Mechanical"
+    ],
+    "SCIENCE": [
+      "Biology",
+      "Materials Science",
+      "Microbiology",
+      "Biochemistry",
+      "Chemistry",
+      "Genetics",
+      "Math",
+      "Physics"
+    ],
+    "COMPUTING": ["Computer Science", "Computer Information Systems"],
+    "PRE-PROFESSIONAL HEALTH": [
+      "Pre-Professional Health Studies",
+      "Pre-Pharmacy",
+      "Pre-Rehabilitation Sciences"
+    ]
+  }
+}
