@@ -1,4 +1,4 @@
-import { addMessageHandler, addCommand } from "../message";
+import { addMessageHandler, addCommand } from "../../lib/message";
 
 import {
   Guild,
@@ -13,7 +13,7 @@ import {
   Channel
 } from "discord.js";
 import { client } from "../../client";
-import { askString, choose } from "../prompt";
+import { askString, choose } from "../../lib/prompt";
 
 const config: {
   majors: { [college: string]: string[] };

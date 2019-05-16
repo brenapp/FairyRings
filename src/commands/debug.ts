@@ -1,5 +1,5 @@
-import { addCommand } from "../message";
-import { client } from "../../client";
+import { addCommand } from "../lib/message";
+import { client } from "../client";
 
 import * as vexdb from "vexdb";
 import keya from "keya";
