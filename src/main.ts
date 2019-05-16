@@ -1,7 +1,7 @@
 import discord from "discord.js";
 import { handleMessage } from "./lib/message";
 
-import report from "./lib/report";
+import report from "./behaviors/report";
 import { client } from "./client";
 
 import "./behaviors";
