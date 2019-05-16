@@ -12,5 +12,9 @@ client.on("ready", () => {
   client.user.setActivity("over the server", { type: "WATCHING" });
 });
 
+const reporter = report(client);
+process.on("uncaughtException", reporter);
+process.on("unhandledRejection", reporter);
+
 client.on("message", handleMessage);
 client.on("error", report);
