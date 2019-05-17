@@ -9,7 +9,7 @@ const key = require("../../../authorization.json").google;
 const config = require("../../../config.json");
 
 const auth = new google.auth.JWT({
-  email: key.email,
+  email: key.client_email,
   key: key.private_key,
   scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"]
 });
