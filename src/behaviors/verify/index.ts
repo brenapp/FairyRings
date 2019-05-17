@@ -14,6 +14,7 @@ import {
 } from "discord.js";
 import { client } from "../../client";
 import { askString, choose } from "../../lib/prompt";
+import checkRoom from "./room";
 
 const config: {
   majors: { [college: string]: string[] };
@@ -32,11 +33,6 @@ export default async function verify(member: GuildMember) {
 
   const name = await askString(
     "Greetings, and welcome to the Byrnes Hall 5th Floor Discord server! To get started, we’ll need some information first. What is your name?",
-    dm
-  );
-
-  const room = await askString(
-    "Thanks. What room do you live in? *(e.g. A6, B2, etc.)*",
     dm
   );
 
@@ -70,13 +66,121 @@ export default async function verify(member: GuildMember) {
     }
   } while (major === "BACK");
 
-  const cuid = await askString("Finally, what's your CUID?", dm);
+  let verified = false;
+  let override = false;
+
+  let room: string, cuid: string;
+
+  do {
+    room = await askString(
+      "What room do you live in? *(e.g. A6, B2, etc.)*",
+      dm
+    );
+
+    if (room === "OVERRIDE") {
+      override = true;
+      break;
+    }
+
+    cuid = await askString("Finally, what's your CUID?", dm);
+
+    if (cuid === "OVERRIDE") {
+      override = true;
+      break;
+    }
+
+    verified = await checkRoom(room, cuid);
+
+    if (!verified) {
+      dm.send(
+        "There doesn't appear to be anyone with that CUID in that room. Check your details. You can also override this check by entering OVERRIDE"
+      );
+    }
+  } while (!verified && !override);
+
+  // Get a reason for override if they did
+  let reason: string;
+  if (override) {
+    reason = await askString(
+      "Please enter your reason for override below. This will be visible to admins",
+      dm
+    );
+  }
+
+  const approve = client.channels.find(
+    channel =>
+      channel.type === "text" &&
+      (channel as TextChannel).name === "member-approval"
+  ) as TextChannel;
 
   dm.send(
-    `Hi ${name}! You live in ${room} and you are studying ${major} in the College of ${college}`
+    "You're all set! Your verification should be approved shortly. Sit tight!"
   );
 
   console.log("VERIFY", name, room, college, major, cuid);
+
+  const embed = new RichEmbed({
+    title: `Verification for **${name}**`,
+    description: `Room #${room}; CUID ${cuid}`,
+    author: {
+      name
+    },
+    fields: [
+      {
+        name: "Field of Study",
+        value: `School of ${college} / ${major}`
+      },
+      {
+        name: verified ? "CUID Verified" : "CUID **Not** Verified",
+        value: override ? reason : "Room & CUID match"
+      },
+      {
+        name: "Verification Procedure",
+        value:
+          "React with :thumbsup: to approve. To deny and kick, react with :thumbsdown: (make sure to give reasoning in #verification)"
+      }
+    ]
+  });
+
+  let approval = (await approve.send(embed)) as Message;
+
+  await Promise.all([approval.react("👍"), approval.react("👎")]);
+
+  const collector = approval.createReactionCollector(
+    (vote, usr) =>
+      (vote.emoji.name === "👎" || vote.emoji.name === "👍") &&
+      usr !== client.user
+  );
+
+  let handle;
+  collector.on(
+    "collect",
+    (handle = vote => {
+      const approver = vote.users.last();
+
+      if (vote.emoji.name === "👍") {
+        approval.edit(
+          embed.addField("Outcome", `Approved by ${approver.toString()}`)
+        );
+      } else {
+        approval.edit(
+          embed.addField(
+            "Outcome",
+            `Denied and Kicked by ${approver.toString()}`
+          )
+        );
+        member.kick("Verification denied.");
+        member.send(
+          `Your verification was denied. Check your information and try again. You can interact with RAs in ${client.channels.find(
+            c => c.type === "text" && (c as TextChannel).name === "verification"
+          )}`
+        );
+      }
+
+      approval.clearReactions();
+      collector.off("collect", handle);
+    })
+  );
 }
 
 client.on("guildMemberAdd", verify);
