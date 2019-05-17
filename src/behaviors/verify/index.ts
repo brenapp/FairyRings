@@ -131,8 +131,10 @@ export default async function verify(member: GuildMember) {
         value: `School of ${college} / ${major}`
       },
       {
-        name: verified ? "CUID Verified" : "CUID **Not** Verified",
-        value: override ? reason : "Room & CUID match"
+        name: verified ? "CUID Verified" : "CUID Not Verified",
+        value: override
+          ? `Given reason for override: ${reason}`
+          : "Room & CUID match"
       },
       {
         name: "Verification Procedure",
@@ -162,6 +164,8 @@ export default async function verify(member: GuildMember) {
         approval.edit(
           embed.addField("Outcome", `Approved by ${approver.toString()}`)
         );
+
+        member.send("Your verification has been approved!");
       } else {
         approval.edit(
           embed.addField(
