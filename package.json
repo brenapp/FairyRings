@@ -1,7 +1,7 @@
 {
-  "name": "vexbot",
+  "name": "byrnesbot",
   "version": "1.0.0",
-  "description": "A simple bot to help with Vex Teams Of South Carolina",
+  "description": "Helps to manage Clemson's Byrnes 5th floor discord",
   "main": "out/main.js",
   "repository": "git@github.com:MayorMonty/vexbot.git",
   "author": "MayorMonty <artificalchamber@gmail.com>",
@@ -12,6 +12,7 @@
     "@types/node": "^10.3.4",
     "discord.js": "^11.3.2",
     "express": "^4.16.3",
+    "googleapis": "^40.0.0",
     "vexdb": "^v2.1.5"
   },
   "devDependencies": {
