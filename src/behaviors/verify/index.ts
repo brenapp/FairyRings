@@ -14,7 +14,7 @@ import {
 } from "discord.js";
 import { client } from "../../client";
 import { askString, choose } from "../../lib/prompt";
-import checkRoom from "./room";
+import checkRoom, { roomExists } from "./room";
 
 const config: {
   majors: { [college: string]: string[] };
@@ -72,10 +72,15 @@ export default async function verify(member: GuildMember) {
   let room: string, cuid: string;
 
   do {
-    room = await askString(
+    room = (await askString(
       "What room do you live in? *(e.g. A6, B2, etc.)*",
       dm
-    );
+    )).toUpperCase();
+
+    if (!(await roomExists(room))) {
+      await dm.send("That room doesn't appear to exist.");
+      continue;
+    }
 
     if (room === "OVERRIDE") {
       override = true;
@@ -92,7 +97,7 @@ export default async function verify(member: GuildMember) {
     verified = await checkRoom(room, cuid);
 
     if (!verified) {
-      dm.send(
+      await dm.send(
         "There doesn't appear to be anyone with that CUID in that room. Check your details. You can also override this check by entering OVERRIDE"
       );
     }
@@ -157,7 +162,7 @@ export default async function verify(member: GuildMember) {
   let handle;
   collector.on(
     "collect",
-    (handle = vote => {
+    (handle = async vote => {
       const approver = vote.users.last();
 
       if (vote.emoji.name === "👍") {
@@ -166,6 +171,12 @@ export default async function verify(member: GuildMember) {
         );
 
         member.send("Your verification has been approved!");
+
+        const roles = [
+          await findOrMakeRole(room, member.guild),
+          await findOrMakeRole("Verified", member.guild)
+        ];
+        member.addRoles(roles, "Verification");
       } else {
         approval.edit(
           embed.addField(

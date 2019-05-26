@@ -26,3 +26,14 @@ export default async function checkRoom(room: string, cuid: string) {
 
   return rooms.some(([r, ...cuids]) => r === room && cuids.includes(cuid));
 }
+
+export async function roomExists(room: string) {
+  const rooms = await sheets.spreadsheets.values
+    .get({
+      spreadsheetId: config.cuid,
+      range: "Records!A2:Z"
+    })
+    .then(resp => resp.data.values as string[][]);
+
+  return rooms.some(v => v[0] === room);
+}
