@@ -9,7 +9,12 @@ import "./commands";
 
 client.on("ready", () => {
   console.log("ByrnesBot#9971 is online!");
-  client.user.setActivity("over the server", { type: "WATCHING" });
+
+  if (process.env["DEV"]) {
+    client.user.setActivity("with VSCode", { type: "PLAYING" });
+  } else {
+    client.user.setActivity("over the server", { type: "WATCHING" });
+  }
 });
 
 const reporter = report(client);

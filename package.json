@@ -9,11 +9,17 @@
   "private": true,
   "dependencies": {
     "@types/express": "^4.16.0",
+    "@types/isomorphic-fetch": "^0.0.35",
     "@types/node": "^10.3.4",
+    "@types/xml-js": "^1.0.0",
     "discord.js": "^11.3.2",
     "express": "^4.16.3",
     "googleapis": "^40.0.0",
-    "vexdb": "^v2.1.5"
+    "ical": "^0.6.0",
+    "isomorphic-fetch": "^2.2.1",
+    "rss-parser": "^3.7.1",
+    "vexdb": "^v2.1.5",
+    "xml-js": "^1.6.11"
   },
   "devDependencies": {
     "nodemon": "^1.17.5",
