@@ -1,32 +1,6 @@
 {
-  "majors": {
-    "ENGINEERING": [
-      "Bioengineering",
-      "Biosystems",
-      "Chemical",
-      "Computer",
-      "Electrical",
-      "Environmental",
-      "Industrial",
-      "Materials",
-      "Mechanical"
-    ],
-    "SCIENCE": [
-      "Biology",
-      "Materials Science",
-      "Microbiology",
-      "Biochemistry",
-      "Chemistry",
-      "Genetics",
-      "Math",
-      "Physics"
-    ],
-    "COMPUTING": ["Computer Science", "Computer Information Systems"],
-    "PRE-PROFESSIONAL HEALTH": [
-      "Pre-Professional Health Studies",
-      "Pre-Pharmacy",
-      "Pre-Rehabilitation Sciences"
-    ]
-  },
-  "cuid": "1mOJC-XnZYrnSnBt2mPAhW3kzwVXn9SbRmE1kwk1Rick"
+  "channels": {
+    "approve": "585347101345710110",
+    "assign": "585346911679152128"
+  }
 }
