@@ -2,5 +2,31 @@
   "channels": {
     "approve": "585347101345710110",
     "assign": "585346911679152128"
-  }
+  },
+  "bosses": [
+    ["Barbarian Assault"],
+    ["Callisto"],
+    ["Chaos Elemental"],
+    ["Chambers of Xeric (CoX Raids 1)"],
+    ["Commander Zilyana (Saradomin GWD)"],
+    ["Corporeal Beast"],
+    ["Dagannoth Kings"],
+    ["General Graardor (Bandos GWD)"],
+    ["Giant Mole"],
+    ["K’ril Tsutsaroth (Zamorak GWD)"],
+    ["Kalphite Queen"],
+    ["King Black Dragon"],
+    ["Kree’arra (Armadyl GWD)"],
+    ["Pest Control"],
+    ["Scorpia"],
+    ["Theatre of Blood (ToB Raids 2)"],
+    ["Venenatis"],
+    ["Vet’ion"],
+    ["Wintertodt"]
+  ],
+  "tankable": [
+    "Commander Zilyana (Saradomin GWD)",
+    "General Graardor (Bandos GWD)",
+    "K’ril Tsutsaroth (Zamorak GWD)"
+  ]
 }

@@ -4,27 +4,7 @@ import { client } from "../../client";
 import confirm from "./confirm";
 import allocatePoints from "./allocate";
 
-const bosses = [
-  ["Barbarian Assault"],
-  ["Callisto"],
-  ["Chaos Elemental"],
-  ["Chambers of Xeric (CoX Raids 1)"],
-  ["Commander Zilyana (Saradomin GWD)"],
-  ["Corporeal Beast"],
-  ["Dagannoth Kings"],
-  ["General Graardor (Bandos GWD)"],
-  ["Giant Mole"],
-  ["K’ril Tsutsaroth (Zamorak GWD)"],
-  ["Kalphite Queen"],
-  ["King Black Dragon"],
-  ["Kree’arra (Armadyl GWD)"],
-  ["Pest Control"],
-  ["Scorpia"],
-  ["Theatre of Blood (ToB Raids 2)"],
-  ["Venenatis"],
-  ["Vet’ion"],
-  ["Wintertodt"]
-];
+const { bosses, tankable } = require("../../../config.json");
 
 function getPoints(number: number, unit: string) {
   unit = unit.toLowerCase();
@@ -50,6 +30,10 @@ export default async function assignPoints(member: GuildMember) {
     "Date of the boss / raid trip? (MM / DD / YYYY)",
     dm
   );
+
+  await dm.send("Boss List");
+  await dm.send(bosses.map(boss => `${boss[0]}`).join("\n"));
+
   const boss = await choose(
     "What boss did you kill? (Refer to the list for exact names)",
     dm,
@@ -72,7 +56,7 @@ export default async function assignPoints(member: GuildMember) {
 
   do {
     let out = await choose(
-      "Who was involved? (one person at a time, Discord usernames)",
+      "Who was involved? (one person at a time, Discord usernames). When finished, enter `DONE`",
       dm,
       [...nicks, ["DONE"]]
     );
@@ -99,7 +83,7 @@ export default async function assignPoints(member: GuildMember) {
 
   do {
     [number, unit] = (await askString(
-      "How long was the trip? (hours or number or raids). For example, specify the trip was `5 hours` or `7 trips`",
+      "How long was the trip? (hours or number or raids). For example, specify the trip was `5 hours` or `7 raids`",
       dm
     )).split(" ");
 
@@ -115,14 +99,18 @@ export default async function assignPoints(member: GuildMember) {
     points[user] += basePoints;
   }
 
-  const tanked = await choose(
-    "Who tanked? (Discord username)",
-    dm,
-    users.map(user => [user.id, user.username])
-  );
+  let tanked = "N/A";
 
-  // Assign extra points for the tank
-  points[tanked] *= 2;
+  if (tankable.includes(boss)) {
+    tanked = await choose(
+      "Who tanked? (Discord username)",
+      dm,
+      users.map(user => [user.id, user.username])
+    );
+
+    // Assign extra points for the tank
+    points[tanked] *= 2;
+  }
 
   // Get the picture
   const picture = await askString(
@@ -138,7 +126,7 @@ export default async function assignPoints(member: GuildMember) {
     // Split contributions
     for (let user of users) {
       const contribution = +(await askString(
-        `How much did ${user} contribute towards the split?`,
+        `How much did ${user} contribute towards the split? (please enter exact numbers)`,
         dm
       )).replace(/[^0-9]/g, "");
 
@@ -166,7 +154,7 @@ export default async function assignPoints(member: GuildMember) {
 
   do {
     let out = await choose(
-      "Who was in the Discord Voice Chat during the Bossing? (one person at a time, Discord usernames)",
+      "Who was in the Discord Voice Chat during the Bossing? (one person at a time, Discord usernames). When finished, enter `DONE`",
       dm,
       [...nicks, ["DONE"]]
     );
