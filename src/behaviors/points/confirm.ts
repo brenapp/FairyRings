@@ -1,5 +1,7 @@
-import { RichEmbed, TextChannel } from "discord.js";
+import { RichEmbed, TextChannel, Message, User } from "discord.js";
 import { client } from "../../client";
+
+const configuration = require("../../../config");
 
 export default async function confirm(
   points: { [key: string]: number },
@@ -52,7 +54,45 @@ export default async function confirm(
         .join("\n")
     );
 
-  const channel = client.channels.get("583525533401219072") as TextChannel;
+  const channel = client.channels.get(
+    configuration.channels.approve
+  ) as TextChannel;
 
-  await channel.send({ embed });
+  const approval = (await channel.send({ embed })) as Message;
+
+  await Promise.all([approval.react("👍"), approval.react("👎")]);
+
+  return new Promise((resolve, reject) => {
+    let collector = approval.createReactionCollector(
+      (vote, usr: User) =>
+        (vote.emoji.name === "👎" || vote.emoji.name === "👍") && !usr.bot
+    );
+    let handleReaction;
+    collector.on(
+      "collect",
+      (handleReaction = vote => {
+        const approver = vote.users.last();
+
+        if (vote.emoji.name === "👍") {
+          approval.edit(
+            embed.addField("Outcome", `Approved by ${approver.toString()}`)
+          );
+
+          if (collector.off) {
+            collector.off("collect", handleReaction);
+          }
+          resolve(true);
+        } else {
+          approval.edit(
+            embed.addField("Outcome", `Denied by ${approver.toString()}`)
+          );
+        }
+        collector.emit("end");
+        approval.clearReactions();
+
+        resolve(false);
+      })
+    );
+    collector.on("end", () => {});
+  }) as Promise<boolean>;
 }
