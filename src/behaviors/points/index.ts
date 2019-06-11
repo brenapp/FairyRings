@@ -115,8 +115,6 @@ export default async function assignPoints(member: GuildMember) {
     points[user] += basePoints;
   }
 
-  await displayPoints(dm, points);
-
   const tanked = await choose(
     "Who tanked? (Discord username)",
     dm,
@@ -125,8 +123,6 @@ export default async function assignPoints(member: GuildMember) {
 
   // Assign extra points for the tank
   points[tanked] *= 2;
-
-  await displayPoints(dm, points);
 
   // Get the picture
   const picture = await askString(
@@ -161,8 +157,6 @@ export default async function assignPoints(member: GuildMember) {
     );
   }
 
-  await displayPoints(dm, points);
-
   const discord = [] as string[];
   done = false;
 
@@ -196,9 +190,7 @@ export default async function assignPoints(member: GuildMember) {
   // Add 10pts to the submitter
   points[member.id] += 10;
 
-  for (let id in points) {
-    await dm.send(`${client.users.get(id)}: ${points[id]} points`);
-  }
+  await displayPoints(dm, points);
 
   const go = await choose(
     "Points will be assigned as above. Is this okay? (y/n)",
