@@ -1,3 +1,2 @@
-import "./log";
-import "./verify";
+import "./points";
 import "./report";
