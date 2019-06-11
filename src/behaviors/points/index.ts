@@ -1,6 +1,7 @@
 import { GuildMember, DMChannel } from "discord.js";
 import { askString, choose } from "../../lib/prompt";
 import { client } from "../../client";
+import confirm from "./confirm";
 
 const bosses = [
   ["Barbarian Assault"],
@@ -191,15 +192,35 @@ export default async function assignPoints(member: GuildMember) {
     await dm.send(`${client.users.get(id)}: ${points[id]} points`);
   }
 
-  const confirm = await choose(
+  const go = await choose(
     "Points will be assigned as above. Is this okay (y/n)",
     dm,
     [["yes", "y", "yeet", "ya"], ["no", "n", "nah"]]
   );
 
-  if (confirm === "yes") {
-    await dm.send("Confirmed.");
+  if (go === "YES") {
+    await dm.send("Sent for confirmation.");
+
+    await confirm(points, {
+      involved,
+      date,
+      boss,
+      tanked,
+      length: [number, unit].join(" "),
+      picture,
+      discord,
+      splitter,
+      invoker: member.id
+    });
   } else {
-    await dm.send("Not confirmed. You can start over");
+    const startover = await choose(
+      "Draft *not* submitted. Would you like to start over?",
+      dm,
+      [["yes", "y", "yeet", "ya"], ["no", "n", "nah"]]
+    );
+
+    if (startover === "YES") {
+      await assignPoints(member);
+    }
   }
 }
