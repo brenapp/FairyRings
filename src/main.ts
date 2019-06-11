@@ -8,7 +8,7 @@ import "./behaviors";
 import "./commands";
 
 client.on("ready", () => {
-  console.log("ByrnesBot#9971 is online!");
+  console.log("FairyRings is online!");
 
   if (process.env["DEV"]) {
     client.user.setActivity("with VSCode", { type: "PLAYING" });
