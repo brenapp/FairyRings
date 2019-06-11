@@ -2,6 +2,7 @@ import { GuildMember, DMChannel } from "discord.js";
 import { askString, choose } from "../../lib/prompt";
 import { client } from "../../client";
 import confirm from "./confirm";
+import allocatePoints from "./allocate";
 
 const bosses = [
   ["Barbarian Assault"],
@@ -94,10 +95,19 @@ export default async function assignPoints(member: GuildMember) {
       .join(", ")}`
   );
 
-  const [number, unit] = (await askString(
-    "How long was the trip? (hours or number or raids)",
-    dm
-  )).split(" ");
+  let number, unit;
+
+  do {
+    [number, unit] = (await askString(
+      "How long was the trip? (hours or number or raids). For example, specify the trip was `5 hours` or `7 trips`",
+      dm
+    )).split(" ");
+
+    if (!number || !unit) {
+      await dm.send("Not sure what you mean.");
+    }
+  } while (!number || !unit);
+
   const basePoints = getPoints(+number, unit);
 
   // Assign base value to each person involved
@@ -135,8 +145,6 @@ export default async function assignPoints(member: GuildMember) {
         `How much did ${user} contribute towards the split?`,
         dm
       )).replace(/[^0-9]/g, "");
-
-      console.log(user.username, contribution);
 
       // Double points if split is > 50mil
       if (contribution > 50000000) {
@@ -193,7 +201,7 @@ export default async function assignPoints(member: GuildMember) {
   }
 
   const go = await choose(
-    "Points will be assigned as above. Is this okay (y/n)",
+    "Points will be assigned as above. Is this okay? (y/n)",
     dm,
     [["yes", "y", "yeet", "ya"], ["no", "n", "nah"]]
   );
@@ -201,7 +209,7 @@ export default async function assignPoints(member: GuildMember) {
   if (go === "YES") {
     await dm.send("Sent for confirmation.");
 
-    await confirm(points, {
+    const approved = await confirm(points, {
       involved,
       date,
       boss,
@@ -212,6 +220,21 @@ export default async function assignPoints(member: GuildMember) {
       splitter,
       invoker: member.id
     });
+
+    if (approved) {
+      await dm.send("Report was approved! Points being assigned now.");
+      await allocatePoints(points);
+    } else {
+      const startover = await choose(
+        "Report was *not* approved. Would you like to start over?",
+        dm,
+        [["yes", "y", "yeet", "ya"], ["no", "n", "nah"]]
+      );
+
+      if (startover === "YES") {
+        await assignPoints(member);
+      }
+    }
   } else {
     const startover = await choose(
       "Draft *not* submitted. Would you like to start over?",
