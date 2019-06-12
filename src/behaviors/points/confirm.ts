@@ -38,14 +38,18 @@ export default async function confirm(
   embed
     .addField("Date", date)
     .addField("Defeated Boss", boss)
-    .addField("Team", involved.map(i => `${client.users.get(i)}`).join(", "))
-    .addField("Tank", tank.toString())
+    .addField("Team", involved.map(i => `${client.users.get(i)}`).join(", "));
+
+  if (tank) {
+    embed.addField("Tank", tank.toString());
+  }
+  embed
     .addField("Length", length)
     .addField("Picture", picture)
     .addField("Loot Splitter", client.users.get(splitter))
     .addField(
       "People in Discord Call",
-      discord.map(i => `${client.users.get(i)}`).join(", ")
+      discord.map(i => `${client.users.get(i)}`).join(", ") || "None"
     )
     .addField(
       "Point Distribution",
@@ -63,7 +67,7 @@ export default async function confirm(
   await Promise.all([approval.react("👍"), approval.react("👎")]);
 
   return new Promise((resolve, reject) => {
-    let collector = approval.createReactionCollector(
+    const collector = approval.createReactionCollector(
       (vote, usr: User) =>
         (vote.emoji.name === "👎" || vote.emoji.name === "👍") && !usr.bot
     );

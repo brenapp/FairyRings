@@ -1,5 +1,5 @@
 import { GuildMember, DMChannel } from "discord.js";
-import { askString, choose } from "../../lib/prompt";
+import { askString, choose, ask } from "../../lib/prompt";
 import { client } from "../../client";
 import confirm from "./confirm";
 import allocatePoints from "./allocate";
@@ -32,10 +32,10 @@ export default async function assignPoints(member: GuildMember) {
   );
 
   await dm.send("Boss List");
-  await dm.send(bosses.map(boss => `${boss[0]}`).join("\n"));
+  await dm.send(bosses.map(boss => `\`${boss[0]}\``).join("\n"));
 
   const boss = await choose(
-    "What boss did you kill? (Refer to the list for exact names)",
+    "What boss did you kill? (Copy and paste from the list above)",
     dm,
     bosses
   );
@@ -43,7 +43,8 @@ export default async function assignPoints(member: GuildMember) {
   // Get members in discord by username
   const nicks = member.guild.members.map(member => [
     member.user.id,
-    member.user.username
+    member.user.username,
+    member.nickname ? member.nickname : member.id
   ]);
   let done = false;
 
@@ -60,6 +61,8 @@ export default async function assignPoints(member: GuildMember) {
       dm,
       [...nicks, ["DONE"]]
     );
+
+    console.log(out);
     if (out === "DONE") {
       done = true;
     } else {
@@ -113,10 +116,18 @@ export default async function assignPoints(member: GuildMember) {
   }
 
   // Get the picture
-  const picture = await askString(
+  const pmsg = await ask(
     "Submit a total loot picture (put the URL here). You may also put N/A, but this will nullify any extra points from the split.",
     dm
   );
+
+  let picture: string;
+
+  if (pmsg.attachments.size > 0) {
+    picture = pmsg.attachments.map(v => v.url).join(", ");
+  } else {
+    picture = pmsg.content;
+  }
 
   let splitter = "N/A";
 
