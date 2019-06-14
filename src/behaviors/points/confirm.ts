@@ -14,7 +14,8 @@ export default async function confirm(
     picture,
     splitter,
     discord,
-    invoker
+    invoker,
+    split
   }: {
     involved: string[];
     date: string;
@@ -25,6 +26,7 @@ export default async function confirm(
     splitter: string;
     discord: string[];
     invoker: string;
+    split: { [key: string]: number };
   }
 ) {
   const embed = new RichEmbed().setTimestamp().setTitle("Point Application");
@@ -50,6 +52,12 @@ export default async function confirm(
     .addField(
       "People in Discord Call",
       discord.map(i => `${client.users.get(i)}`).join(", ") || "None"
+    )
+    .addField(
+      "Loot Split",
+      Object.keys(split)
+        .map(id => `${client.users.get(id)}: ${split[id]} pts`)
+        .join("\n")
     )
     .addField(
       "Point Distribution",
