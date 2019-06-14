@@ -52,12 +52,12 @@ export default async function assignPoints(member: GuildMember) {
   let points: { [key: string]: number } = {};
 
   await dm.send(
-    "Enter all of the Discord usernames of everyone involved in the raid (one by one). Once you're done, enter `DONE`"
+    "Enter all of the Discord usernames of everyone involved in the trip (one by one). Once you're done, enter `DONE`"
   );
 
   do {
     let out = await choose(
-      "Who was involved? (one person at a time, Discord usernames). When finished, enter `DONE`",
+      "Who was involved? (one person at a time, Discord usernames without discriminator OR server nicknames). When finished, enter `DONE`",
       dm,
       [...nicks, ["DONE"]]
     );
@@ -85,10 +85,16 @@ export default async function assignPoints(member: GuildMember) {
   let number, unit;
 
   do {
-    [number, unit] = (await askString(
-      "How long was the trip? (hours or number or raids). For example, specify the trip was `5 hours` or `7 raids`",
-      dm
-    )).split(" ");
+    let question = "How long was the trip? (for example, `5 hours`)";
+
+    if (
+      boss === "Chambers of Xeric (CoX Raids 1)" ||
+      boss === "Theatre of Blood (ToB Raids 2)"
+    ) {
+      question = "How many raids did you do (for example, `7 raids`)";
+    }
+
+    [number, unit] = (await askString(question, dm)).split(" ");
 
     if (!number || !unit) {
       await dm.send("Not sure what you mean.");
@@ -131,6 +137,8 @@ export default async function assignPoints(member: GuildMember) {
 
   let splitter = "N/A";
 
+  let split: { [key: string]: number } = {};
+
   if (picture.toLowerCase() === "n/a") {
     await dm.send("No extra points will be assigned for splits");
   } else {
@@ -147,14 +155,16 @@ export default async function assignPoints(member: GuildMember) {
       } else {
         points[user.id] += contribution / 1000000;
       }
-    }
 
-    splitter = await choose(
-      "Who split the loot?",
-      dm,
-      users.map(u => [u.id, u.username])
-    );
+      split[user.id] = contribution;
+    }
   }
+
+  splitter = await choose(
+    "Who split the loot?",
+    dm,
+    users.map(u => [u.id, u.username])
+  );
 
   const discord = [] as string[];
   done = false;
@@ -165,7 +175,7 @@ export default async function assignPoints(member: GuildMember) {
 
   do {
     let out = await choose(
-      "Who was in the Discord Voice Chat during the Bossing? (one person at a time, Discord usernames). When finished, enter `DONE`",
+      "Who was in the Discord Voice Chat during the Bossing? (one person at a time, Discord usernames without discriminator OR server nicknames). When finished, enter `DONE`",
       dm,
       [...nicks, ["DONE"]]
     );
@@ -209,7 +219,8 @@ export default async function assignPoints(member: GuildMember) {
       picture,
       discord,
       splitter,
-      invoker: member.id
+      invoker: member.id,
+      split
     });
 
     if (approved) {
